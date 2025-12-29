@@ -4,7 +4,7 @@ import com.bit.mopo.model.AddressDto;
 
 public interface AddressService {
 
-    // 로그인한 회원의 주소 1개 조회 (마이페이지 화면용)
+    // 로그인한 회원의 주소 1개 조회 (마이페이지 화면용입니다.)
     AddressDto selectAddressByMemberId(int memberId);
 
     AddressDto selectAddressById(int id);
