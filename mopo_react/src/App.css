@@ -1,0 +1,68 @@
+/* App.css - Main Layout System */
+
+/* 전체 앱 레이아웃 */
+.app-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 헤더 / 푸터 기본 형태 */
+header {
+    background-color: white;
+    border-bottom: 1px solid #dee2e6;
+}
+
+footer {
+    background-color: #212529;
+    color: white;
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content {
+    flex: 1;
+    padding: 1.5rem;
+    background: #f8f9fa;
+}
+
+/* 센터 정렬 레이아웃 (로그인 / 회원가입 등) */
+.center-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 카드 스타일 기본값 */
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,00, 0, 0.05);
+}
+
+/* 버튼 베이스용 */
+.btn {
+    padding: 0.6rem 1.1rem;
+    border-radius: 6px;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    font-size: 0.95rem;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: #0b5ed7;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 1rem;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+}
