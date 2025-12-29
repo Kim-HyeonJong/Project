@@ -39,7 +39,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // 공개 API임
+                        // 공개 API
                         .requestMatchers("/",
                                 "/api/member/login",
                                 "/api/member/register",
