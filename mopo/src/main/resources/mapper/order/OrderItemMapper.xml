@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.mopo.mapper.OrderItemMapper">
+    <!-- 주문 상세 여러 개 저장 -->
+    <insert id="insert" parameterType="OrderItemDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO order_item
+        (order_id, photocard_id, seller_id, quantity, price, amount)
+        VALUES
+        (#{orderId}, #{photocardId}, #{sellerId}, #{quantity}, #{price}, #{amount})
+    </insert>
+
+    <!-- 주문번호 기준 상품 목록 -->
+    <select id="selectByOrderId" parameterType="int" resultType="OrderItemDto">
+        SELECT
+        oi.id,
+        oi.order_id       AS orderId,
+        oi.photocard_id   AS photocardId,
+        oi.seller_id      AS sellerId,
+        oi.quantity,
+        oi.price,
+        oi.amount,
+
+        p.name             AS photocardName,
+        pi.image_url        AS imageUrl
+
+        FROM order_item oi
+        INNER JOIN photocard p
+        ON oi.photocard_id = p.id
+
+        LEFT JOIN photocard_image pi
+        ON p.id = pi.photocard_id
+        AND pi.sort_order = 1
+
+        WHERE oi.order_id = #{orderId}
+    </select>
+
+    <!-- 셀러 주문 조회-->
+    <select id="selectBySellerId"
+            parameterType="int"
+            resultType="OrderSellerResponse">
+
+        SELECT
+        oi.id                 AS orderItemId,
+        o.id                  AS orderId,
+        o.order_number        AS orderNumber,
+        o.status,
+        o.total_amount        AS totalAmount,
+        o.created_at          AS createdAt,
+
+        o.receiver_name       AS receiverName,
+        o.receiver_phone      AS receiverPhone,
+        o.zipcode,
+        o.addr                AS address,
+        o.addr_detail         AS addressDetail,
+
+        p.id                  AS photocardId,
+        p.name                AS photocardName,
+        pi.image_url          AS imageUrl,
+
+        oi.seller_id          AS sellerId,
+        oi.quantity,
+        oi.price,
+        oi.amount
+
+        FROM order_item oi
+        INNER JOIN orders o
+        ON oi.order_id = o.id
+
+        INNER JOIN photocard p
+        ON oi.photocard_id = p.id
+
+        LEFT JOIN photocard_image pi
+        ON p.id = pi.photocard_id
+        AND pi.sort_order = 1
+
+        WHERE oi.seller_id = #{sellerId}
+
+        ORDER BY o.created_at DESC
+
+    </select>
+</mapper>

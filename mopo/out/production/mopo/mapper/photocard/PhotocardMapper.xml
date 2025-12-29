@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.mopo.mapper.PhotocardMapper">
+    <!-- 포토카드 등록 -->
+    <insert id="insert"
+            parameterType="PhotocardDto"
+            useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO photocard (
+        artist_name,
+        artist_type,
+        seller_id,
+        name,
+        limited_flag,
+        photo_type,
+        sign_type,
+        message_flag,
+        effect_type,
+        coating_type,
+        size_type,
+        width_mm,
+        height_mm,
+        thickness_mm,
+        material,
+        coating_material,
+        condition_grade,
+        print_quality,
+        base_price,
+        sale_price,
+        stock,
+        status
+        ) VALUES (
+        #{artistName},
+        #{artistType},
+        #{sellerId},
+        #{name},
+        #{limitedFlag},
+        #{photoType},
+        #{signType},
+        #{messageFlag},
+        #{effectType},
+        #{coatingType},
+        #{sizeType},
+        #{widthMm},
+        #{heightMm},
+        #{thicknessMm},
+        #{material},
+        #{coatingMaterial},
+        #{conditionGrade},
+        #{printQuality},
+        #{basePrice},
+        #{salePrice},
+        #{stock},
+        #{status}
+        )
+    </insert>
+
+    <!-- 포토카드 1개 조회 -->
+    <select id="selectOne" parameterType="int" resultType="PhotocardDto">
+        SELECT
+        p.*,
+        i.image_url
+        FROM photocard p
+        LEFT JOIN photocard_image i
+        ON p.id = i.photocard_id
+        AND i.sort_order = 1
+        WHERE p.id = #{id}
+    </select>
+
+    <!-- 전체 조회 -->
+    <select id="selectAll" parameterType="hashMap" resultType="PhotocardDto">
+        SELECT
+        p.*,
+        i.image_url
+        FROM photocard p
+        LEFT JOIN photocard_image i
+        ON p.id = i.photocard_id
+        AND i.sort_order = 1   <!-- 현재는 사실상 1:1이어서 의미는 없지만 확장성 위해 유지 -->
+
+        WHERE 1 = 1
+
+        <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
+            AND ${searchType} LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+
+        ORDER BY ${sort} ${dir}
+
+        LIMIT #{startRow}, #{size}
+    </select>
+
+    <!-- 판매자별 조회 -->
+    <select id="showAllBySeller" parameterType="int" resultType="PhotocardDto">
+        SELECT *
+        FROM photocard
+        WHERE seller_id = #{sellerId}
+        ORDER BY id DESC
+    </select>
+
+    <!-- 수정 -->
+    <update id="update" parameterType="PhotocardDto">
+        UPDATE photocard
+        <set>
+            <if test="artistName != null"> artist_name = #{artistName}, </if>
+            <if test="artistType != null"> artist_type = #{artistType}, </if>
+            <if test="name != null"> name = #{name}, </if>
+            <if test="limitedFlag != null"> limited_flag = #{limitedFlag}, </if>
+            <if test="photoType != null"> photo_type = #{photoType}, </if>
+            <if test="signType != null"> sign_type = #{signType}, </if>
+            <if test="messageFlag != null"> message_flag = #{messageFlag}, </if>
+            <if test="effectType != null"> effect_type = #{effectType}, </if>
+            <if test="coatingType != null"> coating_type = #{coatingType}, </if>
+            <if test="sizeType != null"> size_type = #{sizeType}, </if>
+            <if test="widthMm != null"> width_mm = #{widthMm}, </if>
+            <if test="heightMm != null"> height_mm = #{heightMm}, </if>
+            <if test="thicknessMm != null"> thickness_mm = #{thicknessMm}, </if>
+            <if test="material != null"> material = #{material}, </if>
+            <if test="coatingMaterial != null"> coating_material = #{coatingMaterial}, </if>
+            <if test="conditionGrade != null"> condition_grade = #{conditionGrade}, </if>
+            <if test="printQuality != null"> print_quality = #{printQuality}, </if>
+            <if test="basePrice != null"> base_price = #{basePrice}, </if>
+            <if test="salePrice != null"> sale_price = #{salePrice}, </if>
+            <if test="status != null"> status = #{status}, </if>
+            <if test="stock != null"> stock = #{stock}, </if>
+        </set>
+        WHERE id = #{id}
+        AND deleted_flag = 'N'
+    </update>
+
+    <!-- 조회수 증가-->
+    <update id="increaseViewCount" parameterType="int">
+        UPDATE photocard
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+        AND deleted_flag = 'N'
+    </update>
+
+    <!--재고수 변경-->
+    <update id="updateStock" parameterType="map">
+        UPDATE photocard
+        SET stock = #{stock}
+        WHERE id = #{id}
+        AND deleted_flag = 'N'
+    </update>
+
+    <!--삭제 여부-->
+    <update id="softDelete" parameterType="int">
+        UPDATE photocard
+        SET deleted_flag = 'Y'
+        WHERE id = #{id}
+    </update>
+
+    <!--복구-->
+    <update id="restore" parameterType="int">
+        UPDATE photocard
+        SET deleted_flag = 'N'
+        WHERE id = #{id}
+    </update>
+
+    <!-- 삭제 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM photocard WHERE id = #{id}
+    </delete>
+
+    <select id="countRow" parameterType="hashMap" resultType="int">
+        SELECT COUNT(*)
+        FROM photocard
+        WHERE deleted_flag = 'N'
+
+        <if test="searchType != null and searchKeyword != null and searchKeyword != ''">
+            AND ${searchType} LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+    </select>
+</mapper>

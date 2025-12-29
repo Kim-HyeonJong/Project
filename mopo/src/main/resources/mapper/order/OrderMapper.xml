@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.mopo.mapper.OrderMapper">
+    <!-- 주문 생성 -->
+    <insert id="insert" parameterType="OrderDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO orders
+        (member_id, order_number, status, total_amount,
+        receiver_name, receiver_phone, zipcode, addr, addr_detail, message)
+        VALUES
+        (#{memberId}, #{orderNumber}, #{status}, #{totalAmount},
+        #{receiverName}, #{receiverPhone}, #{zipcode}, #{addr}, #{addrDetail}, #{message})
+    </insert>
+
+    <!-- 주문 단건 조회 -->
+    <select id="selectByOrderId" parameterType="int" resultType="OrderDto">
+        SELECT *
+        FROM orders
+        WHERE id = #{id}
+    </select>
+
+    <!-- 회원 주문 목록 -->
+    <select id="selectByMemberId" parameterType="int" resultType="OrderDto">
+        SELECT *
+        FROM orders
+        WHERE member_id = #{memberId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 주문 상태 수정 -->
+    <update id="updateStatus">
+        UPDATE orders
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>

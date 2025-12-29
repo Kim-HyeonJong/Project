@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.mopo.mapper.MemberMapper">
+
+    <sql id="memberColumns">
+        id,
+        username,
+        nickname,
+        password,
+        phone,
+        gender,
+        role,
+        created_at,
+        updated_at,
+        status
+    </sql>
+
+    <select id="selectById" parameterType="int" resultType="MemberDto">
+        SELECT
+        <include refid="memberColumns"/>
+        FROM member
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUsername" parameterType="string" resultType="MemberDto">
+        SELECT
+        <include refid="memberColumns"/>
+        FROM member
+        WHERE username = #{username}
+    </select>
+
+    <update id="updateProfile" parameterType="map">
+        UPDATE member
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePassword" parameterType="map">
+        UPDATE member
+        SET password = #{newPassword}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="register" parameterType="MemberDto">
+        INSERT INTO member (
+        username,
+        nickname,
+        password,
+        phone,
+        gender
+        ) VALUES (
+        #{username},
+        #{nickname},
+        #{password},
+        #{phone},
+        #{gender}
+        )
+    </insert>
+
+    <select id="selectAll" resultType="MemberDto">
+        SELECT
+        <include refid="memberColumns"/>
+        FROM member
+    </select>
+
+    <update id="updateRole">
+        UPDATE member
+        SET role = #{role}
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.mopo.mapper.AddressMapper">
+
+    <sql id="addressColumns">
+        id,
+        member_id,
+        name,
+        zipcode,
+        addr,
+        addr_detail,
+        phone
+    </sql>
+
+    <!-- 회원 1명의 주소 조회 (1명 = 1주소 . 1인1주소) -->
+    <select id="selectAddressByMemberId" parameterType="int" resultType="AddressDto">
+        SELECT
+        <include refid="addressColumns"/>
+        FROM address
+        WHERE member_id = #{memberId}
+    </select>
+
+    <!-- 주소id로 단건 조회 -->
+    <select id="selectAddressById" parameterType="int" resultType="AddressDto">
+        SELECT
+        <include refid="addressColumns"/>
+        FROM address
+        WHERE id = #{id}
+    </select>
+
+    <!-- 새 주소 등록 -->
+    <insert id="insertAddress" parameterType="AddressDto"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO address (
+        member_id,
+        name,
+        zipcode,
+        addr,
+        addr_detail,
+        phone
+        )
+        VALUES (
+        #{memberId},
+        #{name},
+        #{zipcode},
+        #{addr},
+        #{addrDetail},
+        #{phone}
+        )
+    </insert>
+
+    <!-- 주소 수정 -->
+    <update id="updateAddress" parameterType="AddressDto">
+        UPDATE address
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="zipcode != null and zipcode != ''">
+                zipcode = #{zipcode},
+            </if>
+            <if test="addr != null and addr != ''">
+                addr = #{addr},
+            </if>
+            <if test="addrDetail != null and addrDetail != ''">
+                addr_detail = #{addrDetail},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 주소 삭제 -->
+    <delete id="deleteAddress" parameterType="int">
+        DELETE FROM address
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

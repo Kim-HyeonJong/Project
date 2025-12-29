@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.mopo.mapper.CartMapper">
+
+
+    <!-- 공통 컬럼 목록 -->
+    <sql id="cartColumns">
+        id,
+        member_id,
+        photocard_id,
+        quantity,
+        created_at
+    </sql>
+
+    <!-- 1. memberId로 장바구니 전체 조회 -->
+    <select id="selectCartListByMemberId" parameterType="int" resultType="CartDto">
+        SELECT
+        <include refid="cartColumns"/>
+        <!-- 이렇게 하면 SELECT id, member_id, photocard_id, quantity, created_at 랑 같은기능 -->
+        FROM cart
+        WHERE member_id = #{memberId}
+        ORDER BY id DESC
+    </select>
+
+    <!-- 2. memberId + photocardId 로 장바구니 항목 1개 조회 -->
+    <select id="selectCartItemByMemberIdAndPhotocardId"
+            parameterType="map"
+            resultType="CartDto">
+        SELECT
+        <include refid="cartColumns"/>
+        FROM cart
+        WHERE member_id = #{memberId}
+        AND photocard_id = #{photocardId}
+        LIMIT 1
+    </select>
+
+    <!-- 3. 장바구니 새 항목 추가 -->
+    <insert id="insertCartItem" parameterType="CartDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO cart (
+        member_id,
+        photocard_id,
+        quantity
+        )
+        VALUES (
+        #{memberId},
+        #{photocardId},
+        #{quantity}
+        )
+    </insert>
+
+    <!-- 4. cartItemId 기준 수량 변경 -->
+    <update id="updateCartItemQuantityById" parameterType="map">
+        UPDATE cart
+        SET quantity = #{quantity}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 5. cartItemId로 장바구니 항목 1개 조회 -->
+    <select id="selectCartItemById" parameterType="int" resultType="CartDto">
+        SELECT
+        <include refid="cartColumns"/>
+        FROM cart
+        WHERE id = #{id}
+    </select>
+
+    <!-- 6. cartItemId로 장바구니 항목 삭제 -->
+    <delete id="deleteCartItemById" parameterType="int">
+        DELETE FROM cart
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 7. memberId 기준 장바구니 전체 삭제 -->
+    <delete id="deleteCartItemsByMemberId" parameterType="int">
+        DELETE FROM cart
+        WHERE member_id = #{memberId}
+    </delete>
+
+    <!-- 8. 체크아웃용: memberId + cartItemIds 리스트로 선택 항목들 조회 -->
+    <select id="selectCartItemsByIdsAndMemberId"
+            parameterType="map"
+            resultType="CartDto">
+        SELECT
+        <include refid="cartColumns"/>
+        FROM cart
+        WHERE member_id = #{memberId}
+        AND id IN
+        <foreach collection="cartItemIds" item="cartItemId" open="(" separator="," close=")">
+            #{cartItemId}
+        </foreach>
+    </select>
+
+    <!-- 9. 체크아웃용: memberId + cartItemIds 리스트로 선택 항목들 삭제 -->
+    <delete id="deleteCartItemsByIds" parameterType="map">
+        DELETE FROM cart
+        WHERE member_id = #{memberId}
+        AND id IN
+        <foreach collection="cartItemIds" item="cartItemId" open="(" separator="," close=")">
+            #{cartItemId}
+        </foreach>
+    </delete>
+
+</mapper>

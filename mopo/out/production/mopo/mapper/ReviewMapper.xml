@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.mopo.mapper.ReviewMapper">
+
+    <sql id="reviewColumns">
+        id,
+        photocard_id,
+        member_id,
+        rating,
+        content,
+        created_at
+    </sql>
+
+    <select id="selectReviewListByPhotocardId" parameterType="int"
+            resultType="ReviewDto">
+        SELECT
+        r.id,
+        r.photocard_id,
+        r.member_id,
+        m.nickname,
+        r.rating,
+        r.content,
+        r.created_at
+        FROM review r
+        JOIN member m ON r.member_id = m.id
+        WHERE r.photocard_id = #{photocardId}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="selectReviewById" parameterType="int"
+            resultType="ReviewDto">
+        SELECT
+        <include refid="reviewColumns"/>
+        FROM review
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insertReview" parameterType="ReviewDto"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO review (
+        photocard_id,
+        member_id,
+        rating,
+        content
+        )
+        VALUES (
+        #{photocardId},
+        #{memberId},
+        #{rating},
+        #{content}
+        )
+    </insert>
+
+    <update id="updateReview" parameterType="ReviewDto">
+        UPDATE review
+        SET
+        rating = #{rating},
+        content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteReview" parameterType="int">
+        DELETE FROM review
+        WHERE id = #{id}
+    </delete>
+
+</mapper>
+

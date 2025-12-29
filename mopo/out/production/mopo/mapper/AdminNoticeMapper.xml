@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.mopo.mapper.AdminNoticeMapper">
+
+    <!-- 공지사항 기본 컬럼 -->
+    <sql id="columns">
+        id,
+        title,
+        content,
+        admin_id,
+        pinned_flag,
+        created_at,
+        updated_at
+    </sql>
+
+
+    <!-- 1) 공지사항 목록 조회 (페이징) -->
+    <select id="selectAll" parameterType="map" resultType="NoticeDto">
+        SELECT
+        <include refid="columns"/>
+        FROM notice
+        ORDER BY pinned_flag DESC, id DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 전체 ROW 개수 -->
+    <select id="countRows" resultType="int">
+        SELECT COUNT(*) FROM notice
+    </select>
+
+    <!-- 2) 공지사항 상세 조회 -->
+    <select id="selectOne" parameterType="int" resultType="NoticeDto">
+        SELECT
+        <include refid="columns"/>
+        FROM notice
+        WHERE id = #{id}
+    </select>
+
+
+    <!-- 3) 공지사항 등록 -->
+    <insert id="insert" parameterType="NoticeDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notice (
+        title,
+        content,
+        admin_id
+        ) VALUES (
+        #{title},
+        #{content},
+        #{adminId}
+        )
+    </insert>
+
+
+    <!-- 4) 공지사항 수정 -->
+    <update id="update" parameterType="NoticeDto">
+        UPDATE notice
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- 5) 공지사항 삭제 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM notice
+        WHERE id = #{id}
+    </delete>
+
+
+    <!-- 6) 공지사항 상단 고정 / 해제 -->
+    <update id="updatePinned">
+        UPDATE notice
+        SET pinned_flag = #{pinnedFlag}
+        WHERE id = #{id}
+    </update>
+
+
+</mapper>
