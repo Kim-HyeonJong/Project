@@ -62,7 +62,6 @@ function App() {
 
                     {/* 공지사항 */}
                     <Route path={"/notices"} element={<NoticeListPage/>}/>
-                    <Route path={"/notice"} element={<NoticeListPage/>}/>
                     <Route path={"/notice/:id"} element={<NoticeDetailPage/>}/>
 
                     {/* 로그인 필요 페이지 */}
